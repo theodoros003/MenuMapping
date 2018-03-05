@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Mapping1</string>
+    <string name="goBtn">Go!</string>
+    <string name="choosemap">Choose map</string>
+    <string name="regularview">Regular View</string>
+    <string name="hikebikemapview">Hike Bike Map View</string>
+    <string name="selectmap">Select Map</string>
+    <string name="setlocation">Set Location</string>
+</resources>
