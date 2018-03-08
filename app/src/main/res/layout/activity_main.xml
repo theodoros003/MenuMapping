@@ -22,7 +22,7 @@
             android:gravity="center_horizontal"
             android:text="Latitude:" />
 
-        <EditText
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="128dp"
@@ -51,7 +51,7 @@
             android:gravity="center_horizontal"
             android:text="Longitude:" />
 
-        <EditText
+        <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="115dp"

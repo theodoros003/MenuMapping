@@ -58,12 +58,12 @@
             android:layout_marginRight="15dp"
             android:gravity="center_horizontal"
             android:background="@drawable/round"
-            android:inputType="numberDecimal"
+            android:inputType="numberDecimal|numberSigned"
             android:id="@+id/vlo1"
             />
     </LinearLayout>
 
     <Button android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:layout_margin="17dp" android:id="@+id/btn1" android:text="@string/goBtn" />
+        android:layout_margin="17dp" android:id="@+id/btn2" android:text="@string/goBtn" />
 
 </LinearLayout>

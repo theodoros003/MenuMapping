@@ -24,6 +24,8 @@ import android.view.View.OnClickListener;
 public class MainActivity extends AppCompatActivity
 {
     MapView mv;
+    Double lat = 51.05;
+    Double lon =-0.72;
 
     /** Called when the activity is first created. */
     @Override
@@ -41,12 +43,14 @@ public class MainActivity extends AppCompatActivity
 
         mv.setBuiltInZoomControls(true);
         mv.getController().setZoom(16);
-        mv.getController().setCenter(new GeoPoint(51.05,-0.72));
+        mv.getController().setCenter(new GeoPoint(lat,lon));
 
         TextView la = (TextView)findViewById(R.id.la1);
-        EditText vla = (EditText)findViewById(R.id.vla1);
+        TextView vla = (TextView)findViewById(R.id.vla1);
         TextView lo = (TextView)findViewById(R.id.lo1);
-        EditText vlo = (EditText)findViewById(R.id.vlo1);
+        TextView vlo = (TextView)findViewById(R.id.vlo1);
+        vla.setText(lat.toString());
+        vlo.setText(lon.toString());
     }
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -66,8 +70,14 @@ public class MainActivity extends AppCompatActivity
         if(item.getItemId() == R.id.setlocation)
         {
             // react to the menu item being selected...
-            Intent intent = new Intent(this,MapChooseActivity.class);
+            Intent intent = new Intent(this,SetLocationActivity.class);
+
+            Bundle bundle = new Bundle();
+            bundle.putDouble("com.example.latitude", lat);
+            bundle.putDouble("com.example.longitude", lon);
+            intent.putExtras(bundle);
             startActivityForResult(intent,1);
+
             return true;
         }
         return false;
@@ -99,16 +109,19 @@ public class MainActivity extends AppCompatActivity
             if (resultCode==RESULT_OK)
             {
                 Bundle extras=intent.getExtras();
-                boolean getlocation = extras.getBoolean("com.example.setlocation");
-                if(getlocation==true)
-                {
-                    mv.getController().setCenter(new GeoPoint(51.05,-0.72));
-                }
+                Double lat = extras.getDouble("com.example.latitude");
+                Double lon = extras.getDouble("com.example.longitude");
+
+                mv.getController().setCenter(new GeoPoint(lat,lon));
+
+                TextView vla = (TextView)findViewById(R.id.vla1);
+                vla.setText(lat.toString());
+
+                TextView vlo = (TextView)findViewById(R.id.vlo1);
+                vlo.setText(lon.toString());
+
             }
         }
     }
-
-
-
 
 }
