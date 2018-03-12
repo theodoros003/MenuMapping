@@ -9,7 +9,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 
-
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
@@ -21,6 +20,10 @@ import android.widget.TextView;
 import android.widget.EditText;
 import android.view.View.OnClickListener;
 
+import android.preference.PreferenceActivity;
+import android.content.SharedPreferences;
+
+
 public class MainActivity extends AppCompatActivity
 {
     MapView mv;
@@ -31,7 +34,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-
         super.onCreate(savedInstanceState);
 
         // This line sets the user agent, a requirement to download OSM maps
@@ -123,5 +125,37 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
+    public void onStart()
+    {
+        super.onStart();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        double lat = Double.parseDouble ( prefs.getString("lat", "50.9") );
+        double lon = Double.parseDouble ( prefs.getString("lon", "-1.4") );
+        boolean autodownload = prefs.getBoolean("autodownload", true);
+        String pizzaCode = prefs.getString("pizza", "NONE");
+
+        // do something with the preference data...
+    }
+    public void onDestroy()
+    {
+        super.onDestroy();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean ("isRecording", isRecording);
+        editor.commit();
+    }
+    public void onSaveInstanceState (Bundle savedInstanceState)
+    {
+        savedInstanceState.putBoolean("isRecording", isRecording);
+    }
+    public void onCreate (Bundle savedInstanceState)
+    {
+        super.onCreate (savedInstanceState);
+        if (savedInstanceState != null)
+        {
+            isRecording = savedInstanceState.getBoolean ("isRecording");
+        }
+    }
+
 
 }
