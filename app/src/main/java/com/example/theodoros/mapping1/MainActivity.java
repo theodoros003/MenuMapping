@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity
     MapView mv;
     Double lat = 51.05;
     Double lon =-0.72;
+    boolean hikebikemap=false;
 
     /** Called when the activity is first created. */
     @Override
@@ -39,13 +40,14 @@ public class MainActivity extends AppCompatActivity
         // This line sets the user agent, a requirement to download OSM maps
         Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
 
+        //  if (savedInstanceState != null)
+        //  {
+        //      isRecording = savedInstanceState.getBoolean ("isRecording");
+        //  }
+
         setContentView(R.layout.activity_main);
 
-        mv = (MapView)findViewById(R.id.map1);
 
-        mv.setBuiltInZoomControls(true);
-        mv.getController().setZoom(16);
-        mv.getController().setCenter(new GeoPoint(lat,lon));
 
         TextView la = (TextView)findViewById(R.id.la1);
         TextView vla = (TextView)findViewById(R.id.vla1);
@@ -67,6 +69,13 @@ public class MainActivity extends AppCompatActivity
             // react to the menu item being selected...
             Intent intent = new Intent(this,MapChooseActivity.class);
             startActivityForResult(intent,0);
+            return true;
+        }
+        if(item.getItemId() == R.id.setPreferences)
+        {
+            // react to the menu item being selected...
+            Intent intent = new Intent(this,MyPrefsActivity.class);
+            startActivityForResult(intent,2);
             return true;
         }
         if(item.getItemId() == R.id.setlocation)
@@ -94,7 +103,7 @@ public class MainActivity extends AppCompatActivity
             if (resultCode==RESULT_OK)
             {
                 Bundle extras=intent.getExtras();
-                boolean hikebikemap = extras.getBoolean("com.example.hikebikemap");
+                hikebikemap = extras.getBoolean("com.example.hikebikemap");
                 if(hikebikemap==true)
                 {
                     mv.setTileSource(TileSourceFactory.HIKEBIKEMAP);
@@ -128,32 +137,47 @@ public class MainActivity extends AppCompatActivity
     public void onStart()
     {
         super.onStart();
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        double lat = Double.parseDouble ( prefs.getString("lat", "50.9") );
-        double lon = Double.parseDouble ( prefs.getString("lon", "-1.4") );
-        String mapPreferenceCodes = prefs.getString("normal", "HB");
+         lat = Double.parseDouble ( prefs.getString("lat", "50.9") );
+         lon = Double.parseDouble ( prefs.getString("lon", "-1.4") );
+
+
+        mv = (MapView)findViewById(R.id.map1);
+
+        mv.setBuiltInZoomControls(true);
+        mv.getController().setZoom(16);
+        mv.getController().setCenter(new GeoPoint(lat,lon));
+
+        String mappref = prefs.getString("mapPreferenceCodes", "normal");
+
+        if("normal".equals(mappref)){
+            hikebikemap=false;
+        } else hikebikemap = true;
+
+
+        if(hikebikemap==true)
+        {
+            mv.setTileSource(TileSourceFactory.HIKEBIKEMAP);
+        }
+        else
+        {
+            mv.setTileSource(TileSourceFactory.MAPNIK);
+        }
 
         // do something with the preference data...
     }
     public void onDestroy()
     {
         super.onDestroy();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean ("isRecording", isRecording);
-        editor.commit();
+       // SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+       // SharedPreferences.Editor editor = prefs.edit();
+       // editor.putBoolean ("isRecording", isRecording);
+       // editor.commit();
     }
     public void onSaveInstanceState (Bundle savedInstanceState)
     {
-        savedInstanceState.putBoolean("isRecording", isRecording);
-    }
-    public void onCreate (Bundle savedInstanceState)
-    {
-        super.onCreate (savedInstanceState);
-        if (savedInstanceState != null)
-        {
-            isRecording = savedInstanceState.getBoolean ("isRecording");
-        }
+        //savedInstanceState.putBoolean("isRecording", isRecording);
     }
 
 
