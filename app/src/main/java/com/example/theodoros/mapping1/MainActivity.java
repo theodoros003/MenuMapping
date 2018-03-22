@@ -131,8 +131,7 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         double lat = Double.parseDouble ( prefs.getString("lat", "50.9") );
         double lon = Double.parseDouble ( prefs.getString("lon", "-1.4") );
-        boolean autodownload = prefs.getBoolean("autodownload", true);
-        String pizzaCode = prefs.getString("pizza", "NONE");
+        String mapPreferenceCodes = prefs.getString("normal", "HB");
 
         // do something with the preference data...
     }

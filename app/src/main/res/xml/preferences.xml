@@ -19,7 +19,7 @@
         android:key="mapStyle"
         android:title="Map Preferences"
         android:summary="Style of map preferences."
-        android:entries="@array/pizzaFlavours"
-        android:entryValues="@array/pizzaFlavourCodes" />
+        android:entries="@array/mapPreference"
+        android:entryValues="@array/mapPreferenceCodes" />
 
 </PreferenceScreen>
