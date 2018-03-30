@@ -28,11 +28,36 @@ public class MainActivity extends AppCompatActivity
 {
     MapView mv;
     Double lat = 51.05;
-    Double lon =-0.72;
+    Double lon = -0.72;
+    Integer zooms = 16;
+    boolean isRecording= false;
     boolean hikebikemap=false;
 
     /** Called when the activity is first created. */
     @Override
+    public void onStart()
+    {
+        super.onStart();
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        double lat = Double.parseDouble ( prefs.getString("lat", "50.9") );
+        double lon = Double.parseDouble ( prefs.getString("lon", "-1.4") );
+        int zooms = Integer.parseInt ( prefs.getString("zoom", "16") );
+
+        // do something with the preference data...
+    }
+    public void onDestroy()
+    {
+        super.onDestroy();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean ("isRecording", isRecording);
+        editor.commit();
+    }
+    public void onSaveInstanceState (Bundle savedInstanceState)
+    {
+        savedInstanceState.putBoolean("isRecording", isRecording);
+    }
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -40,14 +65,17 @@ public class MainActivity extends AppCompatActivity
         // This line sets the user agent, a requirement to download OSM maps
         Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this));
 
-        //  if (savedInstanceState != null)
-        //  {
-        //      isRecording = savedInstanceState.getBoolean ("isRecording");
-        //  }
+        if (savedInstanceState != null)
+        {
+            isRecording = savedInstanceState.getBoolean ("isRecording");
+        }
 
         setContentView(R.layout.activity_main);
 
-
+        mv = (MapView)findViewById(R.id.map1);
+        mv.setBuiltInZoomControls(true);
+        mv.getController().setZoom(16);
+        mv.getController().setCenter(new GeoPoint(lat,lon));
 
         TextView la = (TextView)findViewById(R.id.la1);
         TextView vla = (TextView)findViewById(R.id.vla1);
@@ -71,13 +99,6 @@ public class MainActivity extends AppCompatActivity
             startActivityForResult(intent,0);
             return true;
         }
-        if(item.getItemId() == R.id.setPreferences)
-        {
-            // react to the menu item being selected...
-            Intent intent = new Intent(this,MyPrefsActivity.class);
-            startActivityForResult(intent,2);
-            return true;
-        }
         if(item.getItemId() == R.id.setlocation)
         {
             // react to the menu item being selected...
@@ -88,7 +109,13 @@ public class MainActivity extends AppCompatActivity
             bundle.putDouble("com.example.longitude", lon);
             intent.putExtras(bundle);
             startActivityForResult(intent,1);
-
+            return true;
+        }
+        if(item.getItemId() == R.id.setPreferences)
+        {
+            // react to the menu item being selected...
+            Intent intent = new Intent(this,MyPrefsActivity.class);
+            startActivityForResult(intent,2);
             return true;
         }
         return false;
@@ -96,27 +123,22 @@ public class MainActivity extends AppCompatActivity
     }
     protected void onActivityResult(int requestCode,int resultCode,Intent intent)
     {
-
         if(requestCode==0)
         {
-
             if (resultCode==RESULT_OK)
             {
                 Bundle extras=intent.getExtras();
                 hikebikemap = extras.getBoolean("com.example.hikebikemap");
-                if(hikebikemap==true)
-                {
+                if(hikebikemap) {
                     mv.setTileSource(TileSourceFactory.HIKEBIKEMAP);
                 }
-                else
-                {
+                else {
                     mv.setTileSource(TileSourceFactory.MAPNIK);
                 }
             }
         }
         if(requestCode==1)
         {
-
             if (resultCode==RESULT_OK)
             {
                 Bundle extras=intent.getExtras();
@@ -124,61 +146,42 @@ public class MainActivity extends AppCompatActivity
                 Double lon = extras.getDouble("com.example.longitude");
 
                 mv.getController().setCenter(new GeoPoint(lat,lon));
-
                 TextView vla = (TextView)findViewById(R.id.vla1);
                 vla.setText(lat.toString());
-
                 TextView vlo = (TextView)findViewById(R.id.vlo1);
                 vlo.setText(lon.toString());
+            }
+        }
+        if(requestCode==2)
+        {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            lat = Double.parseDouble ( prefs.getString("lat", "50.9") );
+            lon = Double.parseDouble ( prefs.getString("lon", "-1.4") );
+            zooms = Integer.parseInt ( prefs.getString("zoom", "16") );
 
+            mv = (MapView)findViewById(R.id.map1);
+            mv.setBuiltInZoomControls(true);
+            mv.getController().setZoom(zooms);
+            mv.getController().setCenter(new GeoPoint(lat,lon));
+            TextView vla = (TextView)findViewById(R.id.vla1);
+            vla.setText(lat.toString());
+            TextView vlo = (TextView)findViewById(R.id.vlo1);
+            vlo.setText(lon.toString());
+
+            String mappref = prefs.getString("mapStyle", "normal");
+            if("normal".equals(mappref)){
+                hikebikemap = false;
+            }
+            else {
+                hikebikemap = true;
+            }
+            if(hikebikemap==true) {
+                mv.setTileSource(TileSourceFactory.HIKEBIKEMAP);
+            }
+            else {
+                mv.setTileSource(TileSourceFactory.MAPNIK);
             }
         }
     }
-    public void onStart()
-    {
-        super.onStart();
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-         lat = Double.parseDouble ( prefs.getString("lat", "50.9") );
-         lon = Double.parseDouble ( prefs.getString("lon", "-1.4") );
-
-
-        mv = (MapView)findViewById(R.id.map1);
-
-        mv.setBuiltInZoomControls(true);
-        mv.getController().setZoom(16);
-        mv.getController().setCenter(new GeoPoint(lat,lon));
-
-        String mappref = prefs.getString("mapPreferenceCodes", "normal");
-
-        if("normal".equals(mappref)){
-            hikebikemap=false;
-        } else hikebikemap = true;
-
-
-        if(hikebikemap==true)
-        {
-            mv.setTileSource(TileSourceFactory.HIKEBIKEMAP);
-        }
-        else
-        {
-            mv.setTileSource(TileSourceFactory.MAPNIK);
-        }
-
-        // do something with the preference data...
-    }
-    public void onDestroy()
-    {
-        super.onDestroy();
-       // SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-       // SharedPreferences.Editor editor = prefs.edit();
-       // editor.putBoolean ("isRecording", isRecording);
-       // editor.commit();
-    }
-    public void onSaveInstanceState (Bundle savedInstanceState)
-    {
-        //savedInstanceState.putBoolean("isRecording", isRecording);
-    }
-
 
 }
